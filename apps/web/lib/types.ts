@@ -36,3 +36,30 @@ export interface ApiResponse<T> {
   data: T;
   timestamp: string;
 }
+
+export interface PcrHistoryPoint {
+  pcr: number;
+  timestamp: string;
+}
+
+export interface OiHistoryPoint {
+  timestamp: string;
+  totalCallOI: number;
+  totalPutOI: number;
+}
+
+export interface HeatmapPoint {
+  strikePrice: number;
+  callOI: number;
+  putOI: number;
+  oiChange: number;
+}
+
+export interface UnusualActivityItem {
+  strikePrice: number;
+  expiryDate: string;
+  callOIChange: number;
+  putOIChange: number;
+  callVolume: number;
+  putVolume: number;
+}

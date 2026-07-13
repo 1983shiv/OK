@@ -216,6 +216,10 @@ export class MarketService {
       .limit(100)
       .lean();
 
+    if (snapshots.length === 0) {
+      return this.mockDataService.generateMockPcrHistory(index);
+    }
+
     return snapshots.map((s) => ({
       pcr: (s as any).pcr as number,
       timestamp: (s as any).fetchedAt.toISOString(),
@@ -250,6 +254,10 @@ export class MarketService {
       .sort({ fetchedAt: -1 })
       .limit(100)
       .lean();
+
+    if (snapshots.length === 0) {
+      return this.mockDataService.generateMockOiHistory(index);
+    }
 
     return snapshots.map((s) => {
       const strikes = (s as any).strikes as

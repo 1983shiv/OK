@@ -54,7 +54,7 @@ function VerifyContent() {
       <h1 className="text-xl font-semibold mb-2 text-[var(--bullish)]">Signed in!</h1>
       <p className="text-sm text-[var(--muted)] mb-4">You are now signed in to OptionKart.</p>
       <a
-        href="/"
+        href="/dashboard"
         className="inline-block px-4 py-2 rounded-lg bg-[var(--brand)] text-white font-medium hover:bg-[var(--brand-hover)] transition-colors"
       >
         Go to Dashboard

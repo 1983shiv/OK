@@ -174,4 +174,44 @@ export class MockDataService {
   ) {
     this.dataCache.set(index, { ...data, fetchedAt: new Date() });
   }
+
+  generateMockPcrHistory(
+    index: string,
+    count: number = 60,
+  ): Array<{ pcr: number; timestamp: string }> {
+    const now = new Date();
+    const basePcr = INDEX_CONFIG[index] ? 0.85 + Math.random() * 0.4 : 1.0;
+
+    return Array.from({ length: count }, (_, i) => {
+      const t = new Date(now.getTime() - (count - 1 - i) * 3 * 60 * 1000);
+      const jitter = (Math.random() - 0.5) * 0.15;
+      return {
+        pcr: parseFloat((basePcr + jitter).toFixed(3)),
+        timestamp: t.toISOString(),
+      };
+    });
+  }
+
+  generateMockOiHistory(
+    index: string,
+    count: number = 60,
+  ): Array<{ timestamp: string; totalCallOI: number; totalPutOI: number }> {
+    const now = new Date();
+    const config = INDEX_CONFIG[index] ?? INDEX_CONFIG.NIFTY!;
+    const baseCallOI = config.spotBase * 150 + randomBetween(-100000, 100000);
+    const basePutOI = config.spotBase * 160 + randomBetween(-100000, 100000);
+    const callTrend = randomBetween(-500, 500);
+    const putTrend = randomBetween(-500, 500);
+
+    return Array.from({ length: count }, (_, i) => {
+      const t = new Date(now.getTime() - (count - 1 - i) * 3 * 60 * 1000);
+      const callJitter = randomBetween(-100000, 100000);
+      const putJitter = randomBetween(-100000, 100000);
+      return {
+        timestamp: t.toISOString(),
+        totalCallOI: baseCallOI + callTrend * i + callJitter,
+        totalPutOI: basePutOI + putTrend * i + putJitter,
+      };
+    });
+  }
 }

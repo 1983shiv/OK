@@ -6,6 +6,14 @@ import { SentimentCard } from '../../../components/dashboard/SentimentCard';
 import { PCRGauge } from '../../../components/dashboard/PCRGauge';
 import { OIBarChart } from '../../../components/dashboard/OIBarChart';
 import { TopMovers } from '../../../components/dashboard/TopMovers';
+import { PCRHistoryChart } from '../../../components/charts/PCRHistoryChart';
+import { OITrendChart } from '../../../components/charts/OITrendChart';
+import { OIHeatmap } from '../../../components/charts/OIHeatmap';
+import { UnusualActivityTable } from '../../../components/charts/UnusualActivityTable';
+import { usePcrHistory } from '../../../hooks/usePcrHistory';
+import { useOiHistory } from '../../../hooks/useOiHistory';
+import { useHeatmap } from '../../../hooks/useHeatmap';
+import { useUnusualActivity } from '../../../hooks/useUnusualActivity';
 import type { ApiResponse, DashboardData } from '../../../lib/types';
 
 function fetchDashboard(index: string) {
@@ -20,6 +28,11 @@ export default function DashboardPage() {
     queryFn: () => fetchDashboard('NIFTY'),
     refetchInterval: 30_000,
   });
+
+  const pcrHistory = usePcrHistory('NIFTY');
+  const oiHistory = useOiHistory('NIFTY');
+  const heatmap = useHeatmap('NIFTY');
+  const unusual = useUnusualActivity('NIFTY');
 
   if (isLoading) {
     return (
@@ -100,6 +113,28 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <TopMovers title="Top Call OI Buildup" items={data.topCallBuildup} field="callOIChange" />
         <TopMovers title="Top Put OI Buildup" items={data.topPutBuildup} field="putOIChange" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <PCRHistoryChart
+          data={pcrHistory.data}
+          isLoading={pcrHistory.isLoading}
+          error={pcrHistory.error}
+        />
+        <OITrendChart
+          data={oiHistory.data}
+          isLoading={oiHistory.isLoading}
+          error={oiHistory.error}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <OIHeatmap data={heatmap.data} isLoading={heatmap.isLoading} error={heatmap.error} />
+        <UnusualActivityTable
+          data={unusual.data}
+          isLoading={unusual.isLoading}
+          error={unusual.error}
+        />
       </div>
     </div>
   );

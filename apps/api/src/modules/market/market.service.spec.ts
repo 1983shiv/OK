@@ -87,10 +87,24 @@ describe('MarketService', () => {
       setSpot: jest.fn().mockResolvedValue(undefined),
     };
 
+    const mockPcrHistory = [
+      { pcr: 1.05, timestamp: '2026-07-13T06:00:00Z' },
+      { pcr: 1.03, timestamp: '2026-07-13T05:55:00Z' },
+    ];
+    const mockOiHistory = [
+      {
+        timestamp: '2026-07-13T06:00:00Z',
+        totalCallOI: 8000000,
+        totalPutOI: 8300000,
+      },
+    ];
+
     mockDataService = {
       generate: jest.fn().mockReturnValue(mockData),
       getCached: jest.fn().mockReturnValue(null),
       setCached: jest.fn(),
+      generateMockPcrHistory: jest.fn().mockReturnValue(mockPcrHistory),
+      generateMockOiHistory: jest.fn().mockReturnValue(mockOiHistory),
     };
 
     upstoxService = {
@@ -250,9 +264,13 @@ describe('MarketService', () => {
       expect(result[0]!.timestamp).toBe('2026-07-13T06:00:00.000Z');
     });
 
-    it('returns empty array when no snapshots', async () => {
+    it('falls back to mock history when no snapshots', async () => {
       const result = await service.getPCRHistory('NIFTY');
-      expect(result).toEqual([]);
+      expect(result).toHaveLength(2);
+      expect(result[0]!.pcr).toBe(1.05);
+      expect(mockDataService.generateMockPcrHistory).toHaveBeenCalledWith(
+        'NIFTY',
+      );
     });
   });
 
@@ -271,6 +289,15 @@ describe('MarketService', () => {
   });
 
   describe('getOIHistory', () => {
+    it('falls back to mock OI history when no snapshots', async () => {
+      const result = await service.getOIHistory('NIFTY');
+      expect(result).toHaveLength(1);
+      expect(result[0]!.totalCallOI).toBe(8000000);
+      expect(mockDataService.generateMockOiHistory).toHaveBeenCalledWith(
+        'NIFTY',
+      );
+    });
+
     it('returns OI history from snapshots', async () => {
       const snapshots = [
         {

@@ -1,8 +1,6 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { MarketService } from './market.service';
 import { Public } from '../../common/decorators/public.decorator';
-import { RequiresPlan } from '../../common/decorators/requires-plan.decorator';
-import { PlanGateGuard } from '../../common/guards/plan-gate.guard';
 
 @Controller('market')
 export class MarketController {
@@ -45,29 +43,21 @@ export class MarketController {
   }
 
   @Get('pcr/:index/history')
-  @UseGuards(PlanGateGuard)
-  @RequiresPlan('STARTER', 'PRO', 'ELITE')
   async getPCRHistory(@Param('index') index: string) {
     return this.marketService.getPCRHistory(index.toUpperCase());
   }
 
   @Get('heatmap/:index')
-  @UseGuards(PlanGateGuard)
-  @RequiresPlan('STARTER', 'PRO', 'ELITE')
   async getHeatmap(@Param('index') index: string) {
     return this.marketService.getHeatmap(index.toUpperCase());
   }
 
   @Get('oi-history/:index')
-  @UseGuards(PlanGateGuard)
-  @RequiresPlan('STARTER', 'PRO', 'ELITE')
   async getOIHistory(@Param('index') index: string) {
     return this.marketService.getOIHistory(index.toUpperCase());
   }
 
   @Get('unusual-activity/:index')
-  @UseGuards(PlanGateGuard)
-  @RequiresPlan('STARTER', 'PRO', 'ELITE')
   async getUnusualActivity(@Param('index') index: string) {
     return this.marketService.getUnusualActivity(index.toUpperCase());
   }

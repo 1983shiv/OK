@@ -5,7 +5,11 @@ import { SubscriptionService } from './subscription.service';
 
 describe('SubscriptionController', () => {
   let controller: SubscriptionController;
-  let service: Record<string, jest.Mock>;
+  let service: {
+    createSubscription: jest.Mock;
+    cancelSubscription: jest.Mock;
+    handleWebhook: jest.Mock;
+  };
 
   beforeEach(async () => {
     service = {

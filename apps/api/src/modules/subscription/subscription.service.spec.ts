@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import {
   BadRequestException,
   NotFoundException,
@@ -13,7 +13,7 @@ var mockRzpValidate: jest.Mock;
 function createMockRzp() {
   mockRzpSubs = { create: jest.fn(), cancel: jest.fn() };
   mockRzpValidate = jest.fn().mockReturnValue(true);
-  const ctor = jest.fn(() => ({ subscriptions: mockRzpSubs }));
+  const ctor: any = jest.fn(() => ({ subscriptions: mockRzpSubs }));
   ctor.validateWebhookSignature = mockRzpValidate;
   return ctor;
 }
@@ -21,18 +21,27 @@ jest.mock('razorpay', () => createMockRzp());
 
 type MockFn = jest.Mock;
 
-function mockObj(keys: string[]): Record<string, MockFn> {
-  const obj: Record<string, MockFn> = {};
+function mockObj<T extends string>(keys: T[]): { [K in T]: MockFn } {
+  const obj = {} as { [K in T]: MockFn };
   for (const k of keys) obj[k] = jest.fn();
   return obj;
 }
 
 describe('SubscriptionService', () => {
   let service: SubscriptionService;
-  let prismaSub: Record<string, MockFn>;
-  let prismaUser: Record<string, MockFn>;
-  let prismaPayment: Record<string, MockFn>;
-  let prismaWebhookEvent: Record<string, MockFn>;
+  let prismaSub: {
+    findUnique: MockFn;
+    findFirst: MockFn;
+    create: MockFn;
+    update: MockFn;
+  };
+  let prismaUser: { findUnique: MockFn; update: MockFn };
+  let prismaPayment: { create: MockFn };
+  let prismaWebhookEvent: {
+    findUnique: MockFn;
+    create: MockFn;
+    update: MockFn;
+  };
 
   const mockUser = {
     id: 'user-1',
