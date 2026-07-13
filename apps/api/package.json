@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^5.x",
     "@optionkart/types": "workspace:*",
+    "@optionkart/utils": "workspace:*",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.x",
     "class-transformer": "^0.5.1",

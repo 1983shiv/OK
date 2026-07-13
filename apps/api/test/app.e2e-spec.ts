@@ -109,6 +109,101 @@ describe('API (e2e)', () => {
     });
   });
 
+  describe('Market (public)', () => {
+    it.each(['NIFTY', 'BANKNIFTY', 'FINNIFTY', 'MIDCPNIFTY'])(
+      'GET /v1/market/dashboard/%s returns dashboard data',
+      (index) =>
+        request(app.getHttpServer())
+          .get(`/v1/market/dashboard/${index}`)
+          .expect(200)
+          .expect((res) => {
+            expect(res.body.success).toBe(true);
+            expect(res.body.data.index).toBe(index);
+            expect(res.body.data.spotPrice).toBeGreaterThan(0);
+            expect(res.body.data.pcr).toBeGreaterThan(0);
+            expect(res.body.data.maxPain).toBeGreaterThan(0);
+            expect(res.body.data.totalCallOI).toBeGreaterThan(0);
+            expect(res.body.data.totalPutOI).toBeGreaterThan(0);
+            expect(res.body.data.topCallBuildup.length).toBe(5);
+          }),
+    );
+
+    it('GET /v1/market/chain/NIFTY returns option chain', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/chain/NIFTY')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.success).toBe(true);
+          expect(res.body.data.chain.length).toBeGreaterThan(10);
+          expect(res.body.data.chain[0]).toHaveProperty('strikePrice');
+          expect(res.body.data.chain[0]).toHaveProperty('callOI');
+          expect(res.body.data.chain[0]).toHaveProperty('putOI');
+          expect(res.body.data.chain[0]).toHaveProperty('callIV');
+        }));
+
+    it('GET /v1/market/spot/NIFTY returns spot price', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/spot/NIFTY')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.success).toBe(true);
+          expect(res.body.data.price).toBeGreaterThan(0);
+          expect(res.body.data).toHaveProperty('fetchedAt');
+        }));
+
+    it('GET /v1/market/pcr/NIFTY returns PCR', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/pcr/NIFTY')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.success).toBe(true);
+          expect(res.body.data.pcr).toBeGreaterThan(0);
+          expect(['RISING', 'FALLING', 'NEUTRAL']).toContain(
+            res.body.data.pcrTrend,
+          );
+        }));
+
+    it('GET /v1/market/max-pain/NIFTY returns max pain', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/max-pain/NIFTY')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.success).toBe(true);
+          expect(res.body.data.maxPain).toBeGreaterThan(0);
+        }));
+
+    it('GET /v1/market/support-resistance/NIFTY returns levels', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/support-resistance/NIFTY')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.success).toBe(true);
+          expect(res.body.data).toHaveProperty('support');
+          expect(res.body.data).toHaveProperty('resistance');
+          expect(res.body.data).toHaveProperty('spotPrice');
+        }));
+  });
+
+  describe('Market (plan-gated)', () => {
+    it('GET /v1/market/pcr/NIFTY/history returns 401 without auth', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/pcr/NIFTY/history')
+        .expect(401));
+
+    it('GET /v1/market/heatmap/NIFTY returns 401 without auth', () =>
+      request(app.getHttpServer()).get('/v1/market/heatmap/NIFTY').expect(401));
+
+    it('GET /v1/market/oi-history/NIFTY returns 401 without auth', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/oi-history/NIFTY')
+        .expect(401));
+
+    it('GET /v1/market/unusual-activity/NIFTY returns 401 without auth', () =>
+      request(app.getHttpServer())
+        .get('/v1/market/unusual-activity/NIFTY')
+        .expect(401));
+  });
+
   describe('404', () => {
     it('returns envelope for unknown routes', () => {
       return request(app.getHttpServer())
