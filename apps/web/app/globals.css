@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0d0f14;
+  --surface: #161b26;
+  --surface-hover: #1e2535;
+  --border: #2a3347;
+  --foreground: #e8ecf4;
+  --muted: #6b7a99;
+  --brand: #3b82f6;
+  --brand-hover: #2563eb;
+  --bullish: #22c55e;
+  --bearish: #ef4444;
+  --neutral: #eab308;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}

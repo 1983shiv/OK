@@ -1,0 +1,33 @@
+{
+  "name": "optionkart",
+  "version": "0.0.1",
+  "private": true,
+  "packageManager": "pnpm@11.3.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=11.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4",
+    "prettier": "^3.4.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "typescript": "^5.8.3"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "**/*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
+  }
+}

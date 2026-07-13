@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: optionkart_postgres
+    restart: on-failure
+    environment:
+      POSTGRES_USER: optionkart
+      POSTGRES_PASSWORD: optionkart_dev
+      POSTGRES_DB: optionkart
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U optionkart']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7
+    container_name: optionkart_mongodb
+    restart: on-failure
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: optionkart
+      MONGO_INITDB_ROOT_PASSWORD: optionkart_dev
+      MONGO_INITDB_DATABASE: optionkart
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: optionkart_redis
+    restart: on-failure
+    command: redis-server --requirepass optionkart_dev --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'optionkart_dev', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
