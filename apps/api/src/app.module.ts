@@ -5,6 +5,9 @@ import { validate } from './config/env.schema';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { HealthModule } from './health/health.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { PlanModule } from './modules/plan/plan.module';
 
 @Module({
   imports: [
@@ -18,6 +21,9 @@ import { HealthModule } from './health/health.module';
       inject: [ConfigService],
     }),
     HealthModule,
+    AuthModule,
+    UserModule,
+    PlanModule,
   ],
 })
 export class AppModule {}

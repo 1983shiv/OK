@@ -5,3 +5,150 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// ─── User & Auth ──────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  plan         String   @default("FREE")
+  authProvider String   @default("EMAIL") // EMAIL | GOOGLE
+  googleId     String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  magicLinkTokens MagicLinkToken[]
+  subscriptions   Subscription[]
+  payments        Payment[]
+  watchlistItems  WatchlistItem[]
+  alerts          Alert[]
+  alertHistories  AlertHistory[]
+  preferences     UserPreferences?
+}
+
+model MagicLinkToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Subscription & Payments ──────────────────────────────────────────────────
+
+model Subscription {
+  id                     String    @id @default(cuid())
+  userId                 String    @unique
+  plan                   String    // STARTER | PRO | ELITE
+  status                 String    // ACTIVE | CANCELLED | EXPIRED | PAUSED
+  razorpaySubscriptionId String?
+  currentPeriodStart     DateTime
+  currentPeriodEnd       DateTime
+  trialEndsAt            DateTime?
+  cancelledAt            DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
+}
+
+model Payment {
+  id                  String   @id @default(cuid())
+  userId              String
+  subscriptionId      String?
+  amount              Int      // in paise
+  currency            String   @default("INR")
+  status              String   // SUCCEEDED | FAILED | PENDING | REFUNDED
+  razorpayPaymentId   String?  @unique
+  razorpayOrderId     String?
+  invoiceUrl          String?
+  createdAt           DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+}
+
+// ─── Watchlist & Alerts ───────────────────────────────────────────────────────
+
+model WatchlistItem {
+  id            String   @id @default(cuid())
+  userId        String
+  instrumentKey String
+  symbol        String
+  strikePrice   Int
+  optionType    String   // CE | PE
+  expiryDate    DateTime
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, instrumentKey])
+}
+
+model Alert {
+  id                String    @id @default(cuid())
+  userId            String
+  alertType         String    // OI_SPIKE | PCR_CROSS | MAX_PAIN_SHIFT | WATCHLIST
+  symbol            String
+  strikePrice       Int?
+  optionType        String?   // CE | PE
+  conditionOperator String    // GT | LT | CROSS_ABOVE | CROSS_BELOW
+  conditionValue    Float
+  deliveryChannels  String    // JSON array
+  isActive          Boolean   @default(true)
+  lastTriggeredAt   DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alertHistories AlertHistory[]
+}
+
+model AlertHistory {
+  id           String    @id @default(cuid())
+  alertId      String
+  userId       String
+  triggerValue Float
+  message      String
+  channels     String    // JSON array of channels delivered to
+  readAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  alert Alert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── User Preferences ─────────────────────────────────────────────────────────
+
+model UserPreferences {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  theme          String   @default("dark")
+  defaultIndex   String   @default("NIFTY")
+  defaultExpiry  String?  // "weekly" | "monthly" | null (nearest)
+  notifications  Boolean  @default(true)
+  emailAlerts    Boolean  @default(true)
+  telegramChatId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Webhook Idempotency ──────────────────────────────────────────────────────
+
+model WebhookEvent {
+  id          String    @id @default(cuid())
+  source      String    // RAZORPAY | RESEND
+  eventType   String
+  eventId     String    @unique
+  rawBody     String
+  status      String    @default("RECEIVED") // RECEIVED | PROCESSED | FAILED
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+}

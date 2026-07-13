@@ -35,7 +35,7 @@ api.interceptors.response.use(
       originalConfig._retry = true;
       try {
         const { data } = await api.post('/auth/refresh');
-        setAccessToken(data.accessToken);
+        setAccessToken(data.data?.accessToken ?? data.accessToken);
         return api(originalConfig);
       } catch {
         clearAccessToken();
