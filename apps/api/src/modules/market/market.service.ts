@@ -115,9 +115,7 @@ export class MarketService {
     return fresh.dashboard;
   }
 
-  async getChain(
-    index: string,
-  ): Promise<{
+  async getChain(index: string): Promise<{
     chain: OptionStrike[];
     expiryDate: string;
     availableExpiries: string[];
@@ -224,9 +222,7 @@ export class MarketService {
     }));
   }
 
-  async getHeatmap(
-    index: string,
-  ): Promise<
+  async getHeatmap(index: string): Promise<
     Array<{
       strikePrice: number;
       callOI: number;
@@ -267,9 +263,7 @@ export class MarketService {
     });
   }
 
-  async getUnusualActivity(
-    index: string,
-  ): Promise<
+  async getUnusualActivity(index: string): Promise<
     Array<{
       strikePrice: number;
       expiryDate: string;

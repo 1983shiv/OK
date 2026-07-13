@@ -85,6 +85,9 @@ importers:
       pg:
         specifier: ^8.22.0
         version: 8.22.0
+      razorpay:
+        specifier: ^2.9.6
+        version: 2.9.6
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -6928,6 +6931,12 @@ packages:
       }
     engines: { node: '>= 0.10' }
 
+  razorpay@2.9.6:
+    resolution:
+      {
+        integrity: sha512-zsHAQzd6e1Cc6BNoCNZQaf65ElL6O6yw0wulxmoG5VQDr363fZC90Mp1V5EktVzG45yPyNomNXWlf4cQ3622gQ==,
+      }
+
   rc9@3.0.1:
     resolution:
       {
@@ -12706,6 +12715,13 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.7.2
       unpipe: 1.0.0
+
+  razorpay@2.9.6:
+    dependencies:
+      axios: 1.18.1
+    transitivePeerDependencies:
+      - debug
+      - supports-color
 
   rc9@3.0.1:
     dependencies:

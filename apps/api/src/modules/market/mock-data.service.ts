@@ -135,7 +135,7 @@ export class MockDataService {
       pcr,
       pcrTrend: pcr > 1.1 ? 'RISING' : pcr < 0.9 ? 'FALLING' : 'NEUTRAL',
       maxPain,
-      sentiment: sentiment.label as DashboardData['sentiment'],
+      sentiment: sentiment.label,
       sentimentScore: sentiment.score,
       totalCallOI,
       totalPutOI,
@@ -153,9 +153,7 @@ export class MockDataService {
     return { dashboard, chain: strikes, spotPrice };
   }
 
-  getCached(
-    index: string,
-  ):
+  getCached(index: string):
     | {
         dashboard: DashboardData;
         chain: OptionStrike[];

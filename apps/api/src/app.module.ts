@@ -14,6 +14,7 @@ import { MarketModule } from './modules/market/market.module';
 import { WatchlistModule } from './modules/watchlist/watchlist.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     WatchlistModule,
     AlertsModule,
     NotificationsModule,
+    SubscriptionModule,
   ],
 })
 export class AppModule {}

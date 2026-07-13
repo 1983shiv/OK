@@ -233,6 +233,17 @@ describe('API (e2e)', () => {
         .expect(401));
   });
 
+  describe('Subscription', () => {
+    it('POST /v1/subscription/create returns 401 without auth', () =>
+      request(app.getHttpServer())
+        .post('/v1/subscription/create')
+        .send({ planId: 'starter', billingCycle: 'monthly' })
+        .expect(401));
+
+    it('POST /v1/subscription/cancel returns 401 without auth', () =>
+      request(app.getHttpServer()).post('/v1/subscription/cancel').expect(401));
+  });
+
   describe('404', () => {
     it('returns envelope for unknown routes', () => {
       return request(app.getHttpServer())

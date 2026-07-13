@@ -12,7 +12,7 @@ export class AlertEvaluator {
   evaluate(alert: Alert, currentValue: number): EvaluationResult {
     const { conditionOperator, conditionValue } = alert;
     let triggered = false;
-    let symbol = alert.symbol;
+    const symbol = alert.symbol;
 
     switch (conditionOperator) {
       case 'GT':

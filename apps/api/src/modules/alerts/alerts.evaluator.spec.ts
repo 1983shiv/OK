@@ -17,7 +17,7 @@ function makeAlert(overrides: Partial<Alert> = {}): Alert {
     createdAt: new Date('2026-07-13'),
     updatedAt: new Date('2026-07-13'),
     ...overrides,
-  } as Alert;
+  };
 }
 
 describe('AlertEvaluator', () => {
