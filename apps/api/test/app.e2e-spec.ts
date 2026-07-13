@@ -204,6 +204,35 @@ describe('API (e2e)', () => {
         .expect(401));
   });
 
+  describe('Watchlist', () => {
+    it('GET /v1/watchlist returns 401 without auth', () =>
+      request(app.getHttpServer()).get('/v1/watchlist').expect(401));
+
+    it('POST /v1/watchlist returns 401 without auth', () =>
+      request(app.getHttpServer()).post('/v1/watchlist').send({}).expect(401));
+  });
+
+  describe('Alerts', () => {
+    it('GET /v1/alerts returns 401 without auth', () =>
+      request(app.getHttpServer()).get('/v1/alerts').expect(401));
+
+    it('POST /v1/alerts returns 401 without auth', () =>
+      request(app.getHttpServer()).post('/v1/alerts').send({}).expect(401));
+
+    it('GET /v1/alerts/history returns 401 without auth', () =>
+      request(app.getHttpServer()).get('/v1/alerts/history').expect(401));
+  });
+
+  describe('Notifications', () => {
+    it('GET /v1/notifications returns 401 without auth', () =>
+      request(app.getHttpServer()).get('/v1/notifications').expect(401));
+
+    it('GET /v1/notifications/unread-count returns 401 without auth', () =>
+      request(app.getHttpServer())
+        .get('/v1/notifications/unread-count')
+        .expect(401));
+  });
+
   describe('404', () => {
     it('returns envelope for unknown routes', () => {
       return request(app.getHttpServer())

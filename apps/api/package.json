@@ -24,6 +24,7 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.x",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/mapped-types": "^2.1.1",
     "@nestjs/mongoose": "^11.x",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^5.x",

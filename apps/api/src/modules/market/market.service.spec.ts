@@ -5,7 +5,11 @@ import { MarketCacheService } from './market-cache.service';
 import { MockDataService } from './mock-data.service';
 import { UpstoxService } from './upstox.service';
 import { OISnapshot } from '../../mongoose/oi-snapshot.schema';
-import type { DashboardData, OptionStrike } from '@optionkart/types';
+import type {
+  DashboardData,
+  OptionStrike,
+  MarketStatus,
+} from '@optionkart/types';
 
 function buildMockStrike(overrides: Partial<OptionStrike> = {}): OptionStrike {
   return {
@@ -21,6 +25,7 @@ function buildMockStrike(overrides: Partial<OptionStrike> = {}): OptionStrike {
     putVolume: 8000,
     callIV: 14.5,
     putIV: 15.2,
+    isATM: false,
     ...overrides,
   };
 }
@@ -42,7 +47,7 @@ function buildMockDashboard(
     putOIChange: 80000,
     topCallBuildup: [buildMockStrike()],
     topPutBuildup: [buildMockStrike()],
-    marketStatus: 'OPEN',
+    marketStatus: 'OPEN' as MarketStatus,
     nextOpenAt: null,
     isStale: false,
     staleAgeSeconds: 0,

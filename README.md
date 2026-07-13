@@ -241,8 +241,8 @@ pnpm turbo run test
 
 - [x] **Phase 0** — Infrastructure, CI/CD, local dev setup
 - [x] **Phase 1** — Auth (magic link + Google OAuth), User module, DB schema
-- [ ] **Phase 2** — 🚀 Market data pipeline, live dashboard (MVP launch)
-- [ ] **Phase 3** — Watchlists, alerts, notifications
+- [x] **Phase 2** — 🚀 Market data pipeline, live dashboard (MVP launch)
+- [x] **Phase 3** — Watchlists, alerts, notifications
 - [ ] **Phase 4** — 💰 Razorpay subscriptions (first revenue)
 - [ ] **Phase 5** — OI history charts, heatmap, PCR trends
 - [ ] **Phase 6** — AI chat, strategy suggestions, daily briefs

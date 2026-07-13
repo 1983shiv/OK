@@ -11,6 +11,9 @@ import { UserModule } from './modules/user/user.module';
 import { PlanModule } from './modules/plan/plan.module';
 import { MongooseSchemasModule } from './mongoose/mongoose-schemas.module';
 import { MarketModule } from './modules/market/market.module';
+import { WatchlistModule } from './modules/watchlist/watchlist.module';
+import { AlertsModule } from './modules/alerts/alerts.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { MarketModule } from './modules/market/market.module';
     UserModule,
     PlanModule,
     MarketModule,
+    WatchlistModule,
+    AlertsModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}
