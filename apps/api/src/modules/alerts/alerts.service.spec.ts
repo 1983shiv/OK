@@ -50,14 +50,12 @@ describe('AlertsService', () => {
     };
 
     marketService = {
-      getDashboard: jest
-        .fn()
-        .mockResolvedValue({
-          pcr: 1.1,
-          maxPain: 24100,
-          totalCallOI: 5000000,
-          totalPutOI: 5200000,
-        }),
+      getDashboard: jest.fn().mockResolvedValue({
+        pcr: 1.1,
+        maxPain: 24100,
+        totalCallOI: 5000000,
+        totalPutOI: 5200000,
+      }),
     };
 
     const mockPrisma = {

@@ -17,7 +17,7 @@ type MockFn = jest.Mock & { mockResolvedValue: (v: unknown) => jest.Mock };
 
 function mockObj(keys: string[]): Record<string, MockFn> {
   const obj: Record<string, MockFn> = {};
-  for (const k of keys) obj[k] = jest.fn() as unknown as MockFn;
+  for (const k of keys) obj[k] = jest.fn();
   return obj;
 }
 

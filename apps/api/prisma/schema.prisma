@@ -44,8 +44,10 @@ model Subscription {
   id                     String    @id @default(cuid())
   userId                 String    @unique
   plan                   String    // STARTER | PRO | ELITE
-  status                 String    // ACTIVE | CANCELLED | EXPIRED | PAUSED
+  status                 String    // ACTIVE | CANCELLED | EXPIRED | PAUSED | CREATED
   razorpaySubscriptionId String?
+  razorpayPlanId         String?
+  billingCycle           String    @default("monthly") // monthly | yearly
   currentPeriodStart     DateTime
   currentPeriodEnd       DateTime
   trialEndsAt            DateTime?
