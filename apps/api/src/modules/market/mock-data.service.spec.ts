@@ -94,6 +94,94 @@ describe('MockDataService', () => {
     });
   });
 
+  describe('generateMockPcrHistory', () => {
+    it('generates correct number of data points', () => {
+      const result = service.generateMockPcrHistory('NIFTY', 10);
+      expect(result).toHaveLength(10);
+    });
+
+    it('defaults to 60 data points', () => {
+      const result = service.generateMockPcrHistory('NIFTY');
+      expect(result).toHaveLength(60);
+    });
+
+    it('each point has pcr between 0.5 and 2.0', () => {
+      for (let i = 0; i < 10; i++) {
+        const result = service.generateMockPcrHistory('NIFTY', 50);
+        result.forEach((p) => {
+          expect(p.pcr).toBeGreaterThan(0.5);
+          expect(p.pcr).toBeLessThan(2.0);
+        });
+      }
+    });
+
+    it('timestamps are in ascending order', () => {
+      const result = service.generateMockPcrHistory('NIFTY', 20);
+      for (let i = 1; i < result.length; i++) {
+        expect(new Date(result[i]!.timestamp).getTime()).toBeGreaterThan(
+          new Date(result[i - 1]!.timestamp).getTime(),
+        );
+      }
+    });
+
+    it('timestamps are 3 minutes apart', () => {
+      const result = service.generateMockPcrHistory('NIFTY', 5);
+      for (let i = 1; i < result.length; i++) {
+        const diff =
+          new Date(result[i]!.timestamp).getTime() -
+          new Date(result[i - 1]!.timestamp).getTime();
+        expect(diff).toBe(3 * 60 * 1000);
+      }
+    });
+
+    it('uses default base pcr for unknown index', () => {
+      const result = service.generateMockPcrHistory('UNKNOWN', 5);
+      result.forEach((p) => {
+        expect(p.pcr).toBeGreaterThan(0.5);
+        expect(p.pcr).toBeLessThan(2.0);
+      });
+    });
+  });
+
+  describe('generateMockOiHistory', () => {
+    it('generates correct number of data points', () => {
+      const result = service.generateMockOiHistory('NIFTY', 10);
+      expect(result).toHaveLength(10);
+    });
+
+    it('defaults to 60 data points', () => {
+      const result = service.generateMockOiHistory('NIFTY');
+      expect(result).toHaveLength(60);
+    });
+
+    it('each point has totalCallOI and totalPutOI', () => {
+      const result = service.generateMockOiHistory('BANKNIFTY', 5);
+      result.forEach((p) => {
+        expect(p.totalCallOI).toBeGreaterThan(0);
+        expect(p.totalPutOI).toBeGreaterThan(0);
+      });
+    });
+
+    it('timestamps are in ascending order', () => {
+      const result = service.generateMockOiHistory('FINNIFTY', 20);
+      for (let i = 1; i < result.length; i++) {
+        expect(new Date(result[i]!.timestamp).getTime()).toBeGreaterThan(
+          new Date(result[i - 1]!.timestamp).getTime(),
+        );
+      }
+    });
+
+    it('timestamps are 3 minutes apart', () => {
+      const result = service.generateMockOiHistory('MIDCPNIFTY', 5);
+      for (let i = 1; i < result.length; i++) {
+        const diff =
+          new Date(result[i]!.timestamp).getTime() -
+          new Date(result[i - 1]!.timestamp).getTime();
+        expect(diff).toBe(3 * 60 * 1000);
+      }
+    });
+  });
+
   describe('cache', () => {
     it('stores and retrieves cached data', () => {
       const data = service.generate('NIFTY');
