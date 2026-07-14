@@ -1,11 +1,12 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { apiPost, setAccessToken } from '@/lib/api-client';
 
 function VerifyContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const token = searchParams.get('token');
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMsg, setErrorMsg] = useState('');
@@ -53,12 +54,12 @@ function VerifyContent() {
     <div className="card p-6 text-center">
       <h1 className="text-xl font-semibold mb-2 text-[var(--bullish)]">Signed in!</h1>
       <p className="text-sm text-[var(--muted)] mb-4">You are now signed in to OptionKart.</p>
-      <a
-        href="/dashboard"
+      <button
+        onClick={() => router.push('/dashboard')}
         className="inline-block px-4 py-2 rounded-lg bg-[var(--brand)] text-white font-medium hover:bg-[var(--brand-hover)] transition-colors"
       >
         Go to Dashboard
-      </a>
+      </button>
     </div>
   );
 }

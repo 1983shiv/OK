@@ -11,6 +11,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <a href="/dashboard" className="hover:text-[var(--foreground)] transition-colors">
             Dashboard
           </a>
+          <a href="/ai" className="hover:text-[var(--foreground)] transition-colors">
+            AI
+          </a>
+          <a href="/settings" className="hover:text-[var(--foreground)] transition-colors">
+            Settings
+          </a>
           <a href="/auth/magic-link" className="hover:text-[var(--foreground)] transition-colors">
             Sign In
           </a>

@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EncryptionService } from '../../common/services/encryption.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly encryptionService: EncryptionService,
+  ) {}
 
   async getProfile(userId: string) {
     const user = await this.prismaService.client.user.findUnique({
@@ -57,14 +61,26 @@ export class UserService {
       defaultExpiry?: string;
       notifications?: boolean;
       emailAlerts?: boolean;
+      byoOpenaiKey?: string | null;
     },
   ) {
-    // Ensure preferences exist
+    const updateData: Record<string, unknown> = { ...data };
+
+    if (data.byoOpenaiKey !== undefined) {
+      if (data.byoOpenaiKey === null || data.byoOpenaiKey === '') {
+        updateData.byoOpenaiKey = null;
+      } else {
+        updateData.byoOpenaiKey = this.encryptionService.encrypt(
+          data.byoOpenaiKey,
+        );
+      }
+    }
+
     await this.getPreferences(userId);
 
     return this.prismaService.client.userPreferences.update({
       where: { userId },
-      data,
+      data: updateData as any,
     });
   }
 }

@@ -14,6 +14,7 @@ import { usePcrHistory } from '../../../hooks/usePcrHistory';
 import { useOiHistory } from '../../../hooks/useOiHistory';
 import { useHeatmap } from '../../../hooks/useHeatmap';
 import { useUnusualActivity } from '../../../hooks/useUnusualActivity';
+import { useDailyBrief } from '../../../hooks/useDailyBrief';
 import type { ApiResponse, DashboardData } from '../../../lib/types';
 
 function fetchDashboard(index: string) {
@@ -33,6 +34,7 @@ export default function DashboardPage() {
   const oiHistory = useOiHistory('NIFTY');
   const heatmap = useHeatmap('NIFTY');
   const unusual = useUnusualActivity('NIFTY');
+  const dailyBrief = useDailyBrief('NIFTY');
 
   if (isLoading) {
     return (
@@ -136,6 +138,15 @@ export default function DashboardPage() {
           error={unusual.error}
         />
       </div>
+
+      {dailyBrief.data?.brief && (
+        <div className="card p-4">
+          <h3 className="text-sm font-medium mb-2">Daily Brief — {dailyBrief.data.date}</h3>
+          <div className="text-sm text-[var(--foreground)] leading-relaxed whitespace-pre-wrap">
+            {dailyBrief.data.brief}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

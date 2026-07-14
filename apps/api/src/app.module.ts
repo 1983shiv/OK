@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { validate } from './config/env.schema';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
+import { CommonModule } from './common/common.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
@@ -15,10 +16,15 @@ import { WatchlistModule } from './modules/watchlist/watchlist.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env', validate }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', 'apps/api/.env'],
+      validate,
+    }),
     ScheduleModule.forRoot(),
     PrismaModule,
     RedisModule,
@@ -29,6 +35,7 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
       inject: [ConfigService],
     }),
     MongooseSchemasModule,
+    CommonModule,
     HealthModule,
     AuthModule,
     UserModule,
@@ -38,6 +45,7 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
     AlertsModule,
     NotificationsModule,
     SubscriptionModule,
+    AiModule,
   ],
 })
 export class AppModule {}
