@@ -2,6 +2,7 @@ import {
   calculatePCR,
   calculateMaxPain,
   calculateSentiment,
+  calculateMFI,
   getATMStrike,
   isMarketOpen,
   getNextMarketOpen,
@@ -139,6 +140,31 @@ describe('isMarketOpen', () => {
 
   it('returns false on holidays', () => {
     expect(isMarketOpen(holiday)).toBe(false);
+  });
+});
+
+describe('calculateMFI', () => {
+  it('returns BUYING when put flow dominates', () => {
+    const result = calculateMFI(100_000, 500, 200_000, 800);
+    expect(result.signal).toBe('BUYING');
+    expect(result.mfi).toBeGreaterThan(1.2);
+  });
+
+  it('returns SELLING when call flow dominates', () => {
+    const result = calculateMFI(200_000, 800, 100_000, 500);
+    expect(result.signal).toBe('SELLING');
+    expect(result.mfi).toBeLessThan(0.8);
+  });
+
+  it('returns NEUTRAL when flows are balanced', () => {
+    const result = calculateMFI(150_000, 600, 150_000, 650);
+    expect(result.signal).toBe('NEUTRAL');
+  });
+
+  it('returns NEUTRAL when denominator is 0', () => {
+    const result = calculateMFI(0, 0, 100_000, 500);
+    expect(result.signal).toBe('NEUTRAL');
+    expect(result.mfi).toBe(1);
   });
 });
 

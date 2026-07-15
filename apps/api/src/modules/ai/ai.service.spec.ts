@@ -86,7 +86,7 @@ describe('AiService', () => {
 
   describe('streamChat', () => {
     it('rejects when quota exceeded', async () => {
-      (quotaService.checkAndDeduct as jest.Mock).mockResolvedValue({
+      quotaService.checkAndDeduct.mockResolvedValue({
         allowed: false,
         remaining: 0,
         limit: 5,
@@ -107,7 +107,7 @@ describe('AiService', () => {
     });
 
     it('calls onError with HttpException on quota exceeded', async () => {
-      (quotaService.checkAndDeduct as jest.Mock).mockResolvedValue({
+      quotaService.checkAndDeduct.mockResolvedValue({
         allowed: false,
         remaining: 0,
         limit: 5,
@@ -129,14 +129,12 @@ describe('AiService', () => {
     });
 
     it('returns message when OpenAI not configured and no BYO key', async () => {
-      (quotaService.checkAndDeduct as jest.Mock).mockResolvedValue({
+      quotaService.checkAndDeduct.mockResolvedValue({
         allowed: true,
         remaining: 4,
         limit: 5,
       });
-      (
-        prismaService.client.userPreferences.findUnique as jest.Mock
-      ).mockResolvedValue(null);
+      prismaService.client.userPreferences.findUnique.mockResolvedValue(null);
 
       const svc = createService();
       await svc.streamChat(
@@ -157,7 +155,7 @@ describe('AiService', () => {
 
   describe('suggestStrategy', () => {
     it('rejects when quota exceeded', async () => {
-      (quotaService.checkAndDeduct as jest.Mock).mockResolvedValue({
+      quotaService.checkAndDeduct.mockResolvedValue({
         allowed: false,
         remaining: 0,
         limit: 5,
@@ -170,14 +168,12 @@ describe('AiService', () => {
     });
 
     it('returns message when not configured and no BYO key', async () => {
-      (quotaService.checkAndDeduct as jest.Mock).mockResolvedValue({
+      quotaService.checkAndDeduct.mockResolvedValue({
         allowed: true,
         remaining: 4,
         limit: 5,
       });
-      (
-        prismaService.client.userPreferences.findUnique as jest.Mock
-      ).mockResolvedValue(null);
+      prismaService.client.userPreferences.findUnique.mockResolvedValue(null);
 
       const svc = createService();
       const result = await svc.suggestStrategy('user-1', 'FREE', 'NIFTY');
@@ -227,7 +223,7 @@ describe('AiService', () => {
 
   describe('getUsage', () => {
     it('delegates to quotaService', async () => {
-      (quotaService.getUsage as jest.Mock).mockResolvedValue({
+      quotaService.getUsage.mockResolvedValue({
         used: 2,
         remaining: 3,
         limit: 5,
@@ -250,9 +246,7 @@ describe('AiService', () => {
     });
 
     it('returns status for elite user with BYO key', async () => {
-      (
-        prismaService.client.userPreferences.findUnique as jest.Mock
-      ).mockResolvedValue({
+      prismaService.client.userPreferences.findUnique.mockResolvedValue({
         byoOpenaiKey: 'encrypted-key-value',
       });
       const svc = createService();
@@ -263,9 +257,7 @@ describe('AiService', () => {
     });
 
     it('returns status for elite user without BYO key', async () => {
-      (
-        prismaService.client.userPreferences.findUnique as jest.Mock
-      ).mockResolvedValue({
+      prismaService.client.userPreferences.findUnique.mockResolvedValue({
         byoOpenaiKey: null,
       });
       const svc = createService();

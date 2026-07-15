@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
+import { PostHogProvider } from '../components/PostHogProvider';
 
 const inter = Inter({
   variable: '--font-sans',
@@ -27,7 +29,11 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased`}
     >
-      <body className="min-h-screen flex flex-col">{children}</body>
+      <body className="min-h-screen flex flex-col">
+        <Suspense fallback={<>{children}</>}>
+          <PostHogProvider>{children}</PostHogProvider>
+        </Suspense>
+      </body>
     </html>
   );
 }

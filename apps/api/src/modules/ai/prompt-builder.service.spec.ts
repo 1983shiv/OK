@@ -63,7 +63,7 @@ describe('PromptBuilderService', () => {
 
     it('limits history to last 3 messages', () => {
       const manyMessages = Array.from({ length: 6 }, (_, i) => ({
-        role: (i % 2 === 0 ? 'user' : 'assistant') as 'user' | 'assistant',
+        role: i % 2 === 0 ? 'user' : 'assistant',
         content: `Message ${i + 1}`,
       }));
       const result = service.buildChatPrompt(null, 'Final query', manyMessages);

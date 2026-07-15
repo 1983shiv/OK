@@ -65,8 +65,19 @@ export class MarketService {
   }
 
   private async fetchFromUpstox(index: string): Promise<void> {
-    // Upstox real data pipeline — placeholder for full integration
-    this.fetchFromMock(index);
+    try {
+      const spot = await this.upstoxService.fetchSpotPrice(index);
+      if (spot === null) {
+        this.logger.warn(
+          `Upstox fetch failed for ${index} — serving stale data`,
+        );
+        return;
+      }
+      // Full pipeline: fetch chain, enrich, cache (future)
+      this.fetchFromMock(index);
+    } catch {
+      this.logger.warn(`Upstox fetch error for ${index} — serving stale data`);
+    }
   }
 
   private async saveSnapshot(
@@ -104,12 +115,31 @@ export class MarketService {
 
   async getDashboard(index: string): Promise<DashboardData> {
     const cached = await this.cacheService.getDashboard(index);
-    if (cached) return JSON.parse(cached) as DashboardData;
+    if (cached) {
+      const parsed = JSON.parse(cached) as DashboardData;
+      const age = Math.floor(
+        (Date.now() - new Date(parsed.fetchedAt).getTime()) / 1000,
+      );
+      if (age > 180) {
+        parsed.isStale = true;
+        parsed.staleAgeSeconds = age;
+      }
+      return parsed;
+    }
 
     const mockData = this.mockDataService.getCached(index);
-    if (mockData) return mockData.dashboard;
+    if (mockData) {
+      const dash = { ...mockData.dashboard };
+      const age = Math.floor(
+        (Date.now() - new Date(dash.fetchedAt).getTime()) / 1000,
+      );
+      if (age > 180) {
+        dash.isStale = true;
+        dash.staleAgeSeconds = age;
+      }
+      return dash;
+    }
 
-    // Fallback: generate fresh mock data
     const fresh = this.mockDataService.generate(index);
     this.mockDataService.setCached(index, fresh);
     return fresh.dashboard;

@@ -104,6 +104,9 @@ export interface DashboardData {
   isStale: boolean;
   staleAgeSeconds: number;
   fetchedAt: string;
+  vix: number;
+  mfi: number;
+  mfiSignal: 'BUYING' | 'SELLING' | 'NEUTRAL';
 }
 
 // ─── Watchlist ────────────────────────────────────────────────────────────────

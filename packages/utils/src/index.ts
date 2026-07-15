@@ -87,6 +87,38 @@ export function calculateSentiment(
   return { score, label };
 }
 
+// ─── MFI (Money Flow Index) ────────────────────────────────────────────────────
+
+/**
+ * Calculates a Money Flow Index for the options chain.
+ * MFI combines OI change with volume to gauge "smart money" direction.
+ *
+ * Formula: MFI = (Put OI Change × Put Volume) / (Call OI Change × Call Volume)
+ *
+ * Interpretation:
+ *   > 1.2 → Smart money is buying puts (bearish signal)
+ *   < 0.8 → Smart money is buying calls (bullish signal)
+ *   0.8–1.2 → Neutral
+ */
+export function calculateMFI(
+  callOIChange: number,
+  callVolume: number,
+  putOIChange: number,
+  putVolume: number,
+): { mfi: number; signal: 'BUYING' | 'SELLING' | 'NEUTRAL' } {
+  const denominator = callOIChange * callVolume;
+  if (denominator === 0) return { mfi: 1, signal: 'NEUTRAL' };
+
+  const mfi = parseFloat(((putOIChange * putVolume) / denominator).toFixed(4));
+
+  let signal: 'BUYING' | 'SELLING' | 'NEUTRAL';
+  if (mfi > 1.2) signal = 'BUYING';
+  else if (mfi < 0.8) signal = 'SELLING';
+  else signal = 'NEUTRAL';
+
+  return { mfi, signal };
+}
+
 // ─── ATM Strike ───────────────────────────────────────────────────────────────
 
 /**

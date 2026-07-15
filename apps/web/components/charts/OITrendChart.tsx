@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   LineChart,
   Line,
@@ -11,6 +12,10 @@ import {
   Legend,
 } from 'recharts';
 import type { OiHistoryPoint } from '../../lib/types';
+
+interface AxiosErrorLike {
+  response?: { status: number };
+}
 
 export function OITrendChart({
   data,
@@ -31,17 +36,17 @@ export function OITrendChart({
   }
 
   if (error) {
-    const status = (error as any)?.response?.status;
+    const status = (error as AxiosErrorLike)?.response?.status;
     if (status === 401) {
       return (
         <div className="card p-4 text-center">
           <p className="text-sm text-[var(--muted)]">Sign in to view OI history.</p>
-          <a
+          <Link
             href="/auth/magic-link"
             className="inline-block mt-2 px-4 py-1.5 rounded bg-[var(--brand)] text-white text-xs font-medium hover:bg-[var(--brand-hover)] transition-colors"
           >
             Sign In
-          </a>
+          </Link>
         </div>
       );
     }
@@ -49,12 +54,12 @@ export function OITrendChart({
       return (
         <div className="card p-4 text-center">
           <p className="text-sm text-[var(--muted)]">Upgrade your plan to view OI history.</p>
-          <a
+          <Link
             href="/pricing"
             className="inline-block mt-2 px-4 py-1.5 rounded bg-[var(--brand)] text-white text-xs font-medium hover:bg-[var(--brand-hover)] transition-colors"
           >
             View Plans
-          </a>
+          </Link>
         </div>
       );
     }

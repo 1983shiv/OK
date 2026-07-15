@@ -1,7 +1,12 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import type { HeatmapPoint } from '../../lib/types';
+
+interface AxiosErrorLike {
+  response?: { status: number };
+}
 
 function heatColor(value: number): string {
   if (value > 50000) return '#ef4444';
@@ -45,17 +50,17 @@ export function OIHeatmap({
   }
 
   if (error) {
-    const status = (error as any)?.response?.status;
+    const status = (error as AxiosErrorLike)?.response?.status;
     if (status === 401) {
       return (
         <div className="card p-4 text-center">
           <p className="text-sm text-[var(--muted)]">Sign in to view OI heatmap.</p>
-          <a
+          <Link
             href="/auth/magic-link"
             className="inline-block mt-2 px-4 py-1.5 rounded bg-[var(--brand)] text-white text-xs font-medium hover:bg-[var(--brand-hover)] transition-colors"
           >
             Sign In
-          </a>
+          </Link>
         </div>
       );
     }
@@ -63,12 +68,12 @@ export function OIHeatmap({
       return (
         <div className="card p-4 text-center">
           <p className="text-sm text-[var(--muted)]">Upgrade your plan to view OI heatmap.</p>
-          <a
+          <Link
             href="/pricing"
             className="inline-block mt-2 px-4 py-1.5 rounded bg-[var(--brand)] text-white text-xs font-medium hover:bg-[var(--brand-hover)] transition-colors"
           >
             View Plans
-          </a>
+          </Link>
         </div>
       );
     }

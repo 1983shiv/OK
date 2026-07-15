@@ -52,6 +52,9 @@ function buildMockDashboard(
     isStale: false,
     staleAgeSeconds: 0,
     fetchedAt: new Date().toISOString(),
+    vix: 14.5,
+    mfi: 55,
+    mfiSignal: 'NEUTRAL' as const,
     ...overrides,
   };
 }
@@ -109,6 +112,7 @@ describe('MarketService', () => {
 
     upstoxService = {
       isConfigured: jest.fn().mockReturnValue(false),
+      fetchSpotPrice: jest.fn().mockResolvedValue(null),
     };
 
     oiModel = {
@@ -359,6 +363,7 @@ describe('MarketService', () => {
 
     it('uses Upstox when configured', async () => {
       (upstoxService.isConfigured as jest.Mock).mockReturnValue(true);
+      (upstoxService.fetchSpotPrice as jest.Mock).mockResolvedValue(24200);
       await service.fetchAndCache('NIFTY');
       expect(mockDataService.generate).toHaveBeenCalled();
     });

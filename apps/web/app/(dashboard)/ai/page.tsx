@@ -1,26 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { getAccessToken, setAccessToken } from '../../../lib/api-client';
 import { ChatInterface } from '../../../components/ai/ChatInterface';
 import api from '../../../lib/api-client';
 
 export default function AiPage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/v1';
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const initialToken = getAccessToken();
+  const [token, setToken] = useState<string | null>(initialToken);
+  const [loading, setLoading] = useState(!initialToken);
 
   useEffect(() => {
-    const existing = getAccessToken();
-    if (existing) {
-      setToken(existing);
-      setLoading(false);
-      return;
-    }
+    if (initialToken) return;
 
     api
       .post('/auth/refresh')
-      .then((res) => {
+      .then((res: { data?: { data?: { accessToken?: string }; accessToken?: string } }) => {
         const t = res.data?.data?.accessToken ?? res.data?.accessToken;
         if (t) {
           setAccessToken(t);
@@ -29,7 +26,7 @@ export default function AiPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [initialToken]);
 
   if (loading) {
     return (
@@ -46,12 +43,12 @@ export default function AiPage() {
         <p className="text-sm text-[var(--muted)] mb-4">
           Please sign in to use the AI Market Analyst.
         </p>
-        <a
+        <Link
           href="/auth/magic-link"
           className="px-6 py-3 rounded-lg text-sm font-medium bg-[var(--brand)] text-white hover:opacity-90 transition-opacity"
         >
           Sign In
-        </a>
+        </Link>
       </div>
     );
   }

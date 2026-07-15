@@ -11,7 +11,7 @@ describe('UnusualActivityTable', () => {
   });
 
   it('shows sign-in prompt on 401', () => {
-    const error = { response: { status: 401 } } as any;
+    const error = { response: { status: 401 } } as unknown as Error;
     render(<UnusualActivityTable data={undefined} isLoading={false} error={error} />);
     expect(screen.getByText('Sign in to view unusual activity.')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Sign In' })).toHaveAttribute(
@@ -21,7 +21,7 @@ describe('UnusualActivityTable', () => {
   });
 
   it('shows upgrade prompt on 403', () => {
-    const error = { response: { status: 403 } } as any;
+    const error = { response: { status: 403 } } as unknown as Error;
     render(<UnusualActivityTable data={undefined} isLoading={false} error={error} />);
     expect(screen.getByText('Upgrade your plan to view unusual activity.')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'View Plans' })).toHaveAttribute('href', '/pricing');

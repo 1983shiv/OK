@@ -36,6 +36,7 @@
     "class-validator": "^0.15.1",
     "compression": "^1.x",
     "cookie-parser": "^1.4.7",
+    "grammy": "^1.44.0",
     "helmet": "^8.x",
     "ioredis": "^5.x",
     "jose": "^6.2.3",

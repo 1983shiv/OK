@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   LineChart,
   Line,
@@ -11,16 +12,20 @@ import {
 } from 'recharts';
 import type { PcrHistoryPoint } from '../../lib/types';
 
+interface AxiosErrorLike {
+  response?: { status: number };
+}
+
 function authErrorCard(message: string, action: string, href: string) {
   return (
     <div className="card p-4 text-center">
       <p className="text-sm text-[var(--muted)]">{message}</p>
-      <a
+      <Link
         href={href}
         className="inline-block mt-2 px-4 py-1.5 rounded bg-[var(--brand)] text-white text-xs font-medium hover:bg-[var(--brand-hover)] transition-colors"
       >
         {action}
-      </a>
+      </Link>
     </div>
   );
 }
@@ -44,7 +49,7 @@ export function PCRHistoryChart({
   }
 
   if (error) {
-    const status = (error as any)?.response?.status;
+    const status = (error as AxiosErrorLike)?.response?.status;
     if (status === 401) {
       return authErrorCard('Sign in to view PCR history.', 'Sign In', '/auth/magic-link');
     }

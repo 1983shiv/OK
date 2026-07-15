@@ -29,6 +29,7 @@ export const envSchema = z.object({
   UPSTOX_CLIENT_ID: z.string().optional(),
   UPSTOX_CLIENT_SECRET: z.string().optional(),
   ENCRYPTION_KEY: z.string().optional(),
+  TELEGRAM_BOT_TOKEN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

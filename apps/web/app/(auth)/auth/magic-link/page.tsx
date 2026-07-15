@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { Suspense, useState, FormEvent } from 'react';
 import { apiPost } from '@/lib/api-client';
 
-export default function MagicLinkPage() {
+export const dynamic = 'force-dynamic';
+
+function MagicLinkForm() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -68,5 +70,19 @@ export default function MagicLinkPage() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function MagicLinkPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="card p-6 text-center">
+          <p className="text-[var(--muted)]">Loading...</p>
+        </div>
+      }
+    >
+      <MagicLinkForm />
+    </Suspense>
   );
 }

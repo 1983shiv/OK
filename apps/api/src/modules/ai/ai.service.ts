@@ -252,7 +252,7 @@ export class AiService {
     if (!summary || !summary.aiSummary) return null;
 
     return {
-      brief: summary.aiSummary as string,
+      brief: summary.aiSummary,
       date: today,
     };
   }
@@ -341,7 +341,7 @@ export class AiService {
     response: string,
   ): Promise<void> {
     try {
-      let conversation = await this.conversationModel
+      const conversation = await this.conversationModel
         .findOne({ sessionId, userId })
         .exec();
 

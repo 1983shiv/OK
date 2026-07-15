@@ -20,7 +20,7 @@ describe('OITrendChart', () => {
   });
 
   it('shows sign-in prompt on 401', () => {
-    const error = { response: { status: 401 } } as any;
+    const error = { response: { status: 401 } } as unknown as Error;
     render(<OITrendChart data={undefined} isLoading={false} error={error} />);
     expect(screen.getByText('Sign in to view OI history.')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Sign In' })).toHaveAttribute(
@@ -30,7 +30,7 @@ describe('OITrendChart', () => {
   });
 
   it('shows upgrade prompt on 403', () => {
-    const error = { response: { status: 403 } } as any;
+    const error = { response: { status: 403 } } as unknown as Error;
     render(<OITrendChart data={undefined} isLoading={false} error={error} />);
     expect(screen.getByText('Upgrade your plan to view OI history.')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'View Plans' })).toHaveAttribute('href', '/pricing');

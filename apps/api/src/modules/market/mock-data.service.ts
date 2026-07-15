@@ -8,6 +8,7 @@ import {
   calculatePCR,
   calculateMaxPain,
   calculateSentiment,
+  calculateMFI,
   isMarketOpen,
   getNextMarketOpen,
 } from '@optionkart/utils';
@@ -119,6 +120,15 @@ export class MockDataService {
     const maxPain = calculateMaxPain(strikes);
     const sentiment = calculateSentiment(pcr, callOIChange, putOIChange);
 
+    const totalCallVolume = strikes.reduce((s, st) => s + st.callVolume, 0);
+    const totalPutVolume = strikes.reduce((s, st) => s + st.putVolume, 0);
+    const { mfi, signal: mfiSignal } = calculateMFI(
+      Math.max(callOIChange, 1),
+      Math.max(totalCallVolume, 1),
+      Math.max(putOIChange, 1),
+      Math.max(totalPutVolume, 1),
+    );
+
     const sortedByCallOI = [...strikes]
       .sort((a, b) => b.callOIChange - a.callOIChange)
       .slice(0, 5);
@@ -148,6 +158,9 @@ export class MockDataService {
       isStale: false,
       staleAgeSeconds: 0,
       fetchedAt: now.toISOString(),
+      vix: parseFloat((12 + randomBetween(-20, 20) / 10).toFixed(1)),
+      mfi,
+      mfiSignal,
     };
 
     return { dashboard, chain: strikes, spotPrice };

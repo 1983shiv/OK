@@ -2,31 +2,41 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { apiPost, setAccessToken } from '@/lib/api-client';
+
+interface ApiResponse<T> {
+  data?: T;
+  accessToken?: string;
+}
 
 function VerifyContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get('token');
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    token ? 'loading' : 'error',
+  );
+  const [errorMsg, setErrorMsg] = useState(token ? '' : 'No verification token provided.');
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setErrorMsg('No verification token provided.');
-      return;
-    }
+    if (!token) return;
 
-    apiPost<{ accessToken: string }>('/auth/verify-magic-link', { token })
+    apiPost<ApiResponse<{ accessToken: string }>>('/auth/verify-magic-link', { token })
       .then((res) => {
-        const accessToken = (res as any).data?.accessToken ?? (res as any).accessToken;
-        setAccessToken(accessToken);
-        setStatus('success');
+        const accessToken = res.data?.accessToken ?? res.accessToken;
+        if (accessToken) {
+          setAccessToken(accessToken);
+          setStatus('success');
+        } else {
+          setStatus('error');
+          setErrorMsg('Invalid response from server.');
+        }
       })
-      .catch((err) => {
+      .catch((err: Error) => {
+        const axiosErr = err as { response?: { data?: { error?: { message?: string } } } };
         setStatus('error');
-        setErrorMsg(err?.response?.data?.error?.message ?? 'Verification failed.');
+        setErrorMsg(axiosErr.response?.data?.error?.message ?? 'Verification failed.');
       });
   }, [token]);
 
@@ -43,9 +53,9 @@ function VerifyContent() {
       <div className="card p-6 text-center">
         <h1 className="text-xl font-semibold mb-2 text-[var(--bearish)]">Verification failed</h1>
         <p className="text-sm text-[var(--muted)] mb-4">{errorMsg}</p>
-        <a href="/auth/magic-link" className="text-sm text-[var(--brand)] hover:underline">
+        <Link href="/auth/magic-link" className="text-sm text-[var(--brand)] hover:underline">
           Try again
-        </a>
+        </Link>
       </div>
     );
   }

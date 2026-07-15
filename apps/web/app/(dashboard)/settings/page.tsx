@@ -11,9 +11,13 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiGet<any>('/user/profile')
-      .then((r: any) => {
-        setPlan((r as any).data?.plan ?? (r as any).plan ?? null);
+    interface ProfileResponse {
+      data?: { plan?: string };
+      plan?: string;
+    }
+    apiGet<ProfileResponse>('/user/profile')
+      .then((r: ProfileResponse) => {
+        setPlan(r.data?.plan ?? r.plan ?? null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -32,8 +36,9 @@ export default function SettingsPage() {
       });
       setSaved(true);
       setByoKey('');
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? err?.message ?? 'Failed to save');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(axiosErr?.response?.data?.message ?? axiosErr?.message ?? 'Failed to save');
     }
   };
 
@@ -42,8 +47,9 @@ export default function SettingsPage() {
     try {
       await apiPatch('/user/preferences', { byoOpenaiKey: null });
       setSaved(true);
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? err?.message ?? 'Failed to remove');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(axiosErr?.response?.data?.message ?? axiosErr?.message ?? 'Failed to remove');
     }
   };
 

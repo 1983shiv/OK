@@ -13,7 +13,13 @@ export interface DashboardData {
   topCallBuildup: { strikePrice: number; callOIChange: number }[];
   topPutBuildup: { strikePrice: number; putOIChange: number }[];
   marketStatus: string;
+  nextOpenAt: string | null;
+  isStale: boolean;
+  staleAgeSeconds: number;
   fetchedAt: string;
+  vix: number;
+  mfi: number;
+  mfiSignal: 'BUYING' | 'SELLING' | 'NEUTRAL';
 }
 
 export interface OptionStrike {

@@ -5,7 +5,7 @@ import { useUnusualActivity } from '../useUnusualActivity';
 
 const mockApiGet = vi.fn();
 vi.mock('../../lib/api-client', () => ({
-  apiGet: (...args: any[]) => mockApiGet(...args),
+  apiGet: (...args: unknown[]) => mockApiGet(...args),
 }));
 
 function wrapper({ children }: { children: React.ReactNode }) {

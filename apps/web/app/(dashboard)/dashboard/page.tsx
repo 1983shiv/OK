@@ -1,21 +1,41 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { SentimentCard } from '../../../components/dashboard/SentimentCard';
 import { PCRGauge } from '../../../components/dashboard/PCRGauge';
 import { OIBarChart } from '../../../components/dashboard/OIBarChart';
 import { TopMovers } from '../../../components/dashboard/TopMovers';
-import { PCRHistoryChart } from '../../../components/charts/PCRHistoryChart';
-import { OITrendChart } from '../../../components/charts/OITrendChart';
-import { OIHeatmap } from '../../../components/charts/OIHeatmap';
-import { UnusualActivityTable } from '../../../components/charts/UnusualActivityTable';
+import { VixWidget } from '../../../components/dashboard/VixWidget';
+import { SmartMoneyGauge } from '../../../components/dashboard/SmartMoneyGauge';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { usePcrHistory } from '../../../hooks/usePcrHistory';
 import { useOiHistory } from '../../../hooks/useOiHistory';
 import { useHeatmap } from '../../../hooks/useHeatmap';
 import { useUnusualActivity } from '../../../hooks/useUnusualActivity';
 import { useDailyBrief } from '../../../hooks/useDailyBrief';
+import { trackEvent } from '../../../lib/analytics';
 import type { ApiResponse, DashboardData } from '../../../lib/types';
+
+const PCRHistoryChart = dynamic(
+  () => import('../../../components/charts/PCRHistoryChart').then((m) => m.PCRHistoryChart),
+  { ssr: false },
+);
+const OITrendChart = dynamic(
+  () => import('../../../components/charts/OITrendChart').then((m) => m.OITrendChart),
+  { ssr: false },
+);
+const OIHeatmap = dynamic(
+  () => import('../../../components/charts/OIHeatmap').then((m) => m.OIHeatmap),
+  { ssr: false },
+);
+const UnusualActivityTable = dynamic(
+  () =>
+    import('../../../components/charts/UnusualActivityTable').then((m) => m.UnusualActivityTable),
+  { ssr: false },
+);
 
 function fetchDashboard(index: string) {
   return axios
@@ -24,7 +44,7 @@ function fetchDashboard(index: string) {
 }
 
 export default function DashboardPage() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, dataUpdatedAt } = useQuery({
     queryKey: ['dashboard', 'NIFTY'],
     queryFn: () => fetchDashboard('NIFTY'),
     refetchInterval: 30_000,
@@ -35,11 +55,22 @@ export default function DashboardPage() {
   const heatmap = useHeatmap('NIFTY');
   const unusual = useUnusualActivity('NIFTY');
   const dailyBrief = useDailyBrief('NIFTY');
+  const tracked = useRef(false);
+
+  useEffect(() => {
+    if (data && !tracked.current) {
+      tracked.current = true;
+      trackEvent('dashboard_loaded', {
+        index: data.index,
+        load_time_ms: dataUpdatedAt ? Date.now() - dataUpdatedAt : undefined,
+      });
+    }
+  }, [data, dataUpdatedAt]);
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 animate-pulse">
+        {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="card h-32" />
         ))}
       </div>
@@ -64,7 +95,7 @@ export default function DashboardPage() {
         <span className="text-2xl font-semibold">{data.spotPrice.toLocaleString('en-IN')}</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
         <SentimentCard sentiment={data.sentiment} score={data.sentimentScore} />
         <PCRGauge pcr={data.pcr} trend={data.pcrTrend} />
         <div className="card p-4 flex flex-col justify-between">
@@ -85,6 +116,8 @@ export default function DashboardPage() {
             {new Date(data.fetchedAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })}
           </span>
         </div>
+        <VixWidget vix={data.vix} marketStatus={data.marketStatus} />
+        <SmartMoneyGauge mfi={data.mfi} signal={data.mfiSignal} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -118,25 +151,33 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <PCRHistoryChart
-          data={pcrHistory.data}
-          isLoading={pcrHistory.isLoading}
-          error={pcrHistory.error}
-        />
-        <OITrendChart
-          data={oiHistory.data}
-          isLoading={oiHistory.isLoading}
-          error={oiHistory.error}
-        />
+        <ErrorBoundary>
+          <PCRHistoryChart
+            data={pcrHistory.data}
+            isLoading={pcrHistory.isLoading}
+            error={pcrHistory.error}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <OITrendChart
+            data={oiHistory.data}
+            isLoading={oiHistory.isLoading}
+            error={oiHistory.error}
+          />
+        </ErrorBoundary>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <OIHeatmap data={heatmap.data} isLoading={heatmap.isLoading} error={heatmap.error} />
-        <UnusualActivityTable
-          data={unusual.data}
-          isLoading={unusual.isLoading}
-          error={unusual.error}
-        />
+        <ErrorBoundary>
+          <OIHeatmap data={heatmap.data} isLoading={heatmap.isLoading} error={heatmap.error} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <UnusualActivityTable
+            data={unusual.data}
+            isLoading={unusual.isLoading}
+            error={unusual.error}
+          />
+        </ErrorBoundary>
       </div>
 
       {dailyBrief.data?.brief && (

@@ -21,7 +21,7 @@ describe('PCRHistoryChart', () => {
   });
 
   it('shows sign-in prompt on 401', () => {
-    const error = { response: { status: 401 } } as any;
+    const error = { response: { status: 401 } } as unknown as Error;
     render(<PCRHistoryChart data={undefined} isLoading={false} error={error} />);
     expect(screen.getByText('Sign in to view PCR history.')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Sign In' })).toHaveAttribute(
@@ -31,7 +31,7 @@ describe('PCRHistoryChart', () => {
   });
 
   it('shows upgrade prompt on 403', () => {
-    const error = { response: { status: 403 } } as any;
+    const error = { response: { status: 403 } } as unknown as Error;
     render(<PCRHistoryChart data={undefined} isLoading={false} error={error} />);
     expect(screen.getByText('Upgrade your plan to view PCR history.')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'View Plans' })).toHaveAttribute('href', '/pricing');
